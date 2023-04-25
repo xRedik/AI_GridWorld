@@ -5,8 +5,8 @@ import os
  
 class Q_learning:
     def __init__(self, learning_rate, decay_rate, epsilon, width = 40, height = 40, 
-                 reward_threshold = 800, save_threshold = 15,summary_threshold = 15, n_iterations = 15000, gridWorld_id = 0,
-                 bool_proggressbar = False, epsilon_decay_rate = 0.01, set_randomly = False):
+                 reward_threshold = 800, save_threshold = 50,summary_threshold = 15, n_iterations = 15000, gridWorld_id = 0,
+                 bool_proggressbar = False, epsilon_decay_rate = 0.01, set_randomly = True):
         
         self.lr = learning_rate
         self.weight_facter = 1 - learning_rate
@@ -46,12 +46,12 @@ class Q_learning:
     def get_table(self):
         return np.load(self.filename, allow_pickle=True) if os.path.exists(self.filename) else self.initialize_table()
 
-    def _set_initial_number(self):
+    def _set_initial_value(self):
         return np.random.uniform(low=-1, high=1) if self.set_randomly else 0
     
     def initialize_table(self):
-        return np.array([[{"North": self._set_initial_number(), "South": self._set_initial_number(), 
-                            "West": self._set_initial_number(), "East": self._set_initial_number()} 
+        return np.array([[{"North": self._set_initial_value(), "South": self._set_initial_value(), 
+                            "West": self._set_initial_value(), "East": self._set_initial_value()} 
                             for _ in range(self.width)] for _ in range(self.height)])
     
     def save_table(self):

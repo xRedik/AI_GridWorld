@@ -25,7 +25,7 @@ def main():
         raise Exception("Please enter the values with proper flags\n\
                         For help message call the program with -h flag")
 
-    grid_world_agent = Q_learning(learning_rate,decay_rate,epsilon,bool_proggressbar=False)
+    grid_world_agent = Q_learning(learning_rate,decay_rate,epsilon,bool_proggressbar=True)
     grid_world_agent.train_agent(n_episodes = 3)
 
 if __name__=="__main__":
