@@ -93,29 +93,31 @@ class APIWrapper:
             return parsed_res
 
     # !DONT RESET
-    # def reset_team(self):
-    #     payload = {}
+    def reset_team(self):
+        payload = {}
 
-    #     queryParam = {'teamId': self.teamId, 'otp': '5712768807'}
+        queryParam = {'teamId': self.teamId, 'otp': '5712768807'}
 
-    #     response = requests.request(
-    #         "GET", 'https://www.notexponential.com/aip2pgaming/api/rl/reset.php', headers=self.headers, data=payload, params=queryParam)
-    #     print(response.text)
+        response = requests.request(
+            "GET", 'https://www.notexponential.com/aip2pgaming/api/rl/reset.php', headers=self.headers, data=payload, params=queryParam)
+        print(response.text)
 
 
 def main():
     api = APIWrapper()
-    # runs = api.get_runs(1)
-    # print(runs)
+    runs = api.get_runs(1)
+    print(runs)
 
-    # world, res = api.get_location()
-    # print(world)
+    world, res = api.get_location()
+    print(world)
 
-    # worldId = api.enter_world(0)
+    worldId = api.enter_world(0)
 
-    # api.make_move(worldId, 0)
+    api.make_move(worldId, 0)
     score = api.get_score()
     print(score)
+
+    #api.reset_team()
 
 if __name__=="__main__":
     main()

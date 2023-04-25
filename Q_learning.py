@@ -6,7 +6,7 @@ import os
 class Q_learning:
     def __init__(self, learning_rate, decay_rate, epsilon, width = 40, height = 40, 
                  reward_threshold = 800, save_threshold = 15,summary_threshold = 15, n_iterations = 15000, gridWorld_id = 0,
-                 bool_proggressbar = False, epsilon_decay_rate = 0.01):
+                 bool_proggressbar = False, epsilon_decay_rate = 0.01, set_randomly = False):
         
         self.lr = learning_rate
         self.weight_facter = 1 - learning_rate
@@ -19,6 +19,7 @@ class Q_learning:
         self.summary_threshold = summary_threshold
         self.n_iterations = n_iterations
         self.gridWorld_id = gridWorld_id
+        self.set_randomly = set_randomly
         self.bool_progressbar = bool_proggressbar
         self.epsilon_decay_rate = epsilon_decay_rate
 
@@ -45,12 +46,12 @@ class Q_learning:
     def get_table(self):
         return np.load(self.filename, allow_pickle=True) if os.path.exists(self.filename) else self.initialize_table()
 
-    def _get_random_number(self):
-        return np.random.uniform(low=-1, high=1)
+    def _set_initial_number(self):
+        return np.random.uniform(low=-1, high=1) if self.set_randomly else 0
     
     def initialize_table(self):
-        return np.array([[{"North": self._get_random_number(), "South": self._get_random_number(), 
-                            "West": self._get_random_number(), "East": self._get_random_number()} 
+        return np.array([[{"North": self._set_initial_number(), "South": self._set_initial_number(), 
+                            "West": self._set_initial_number(), "East": self._set_initial_number()} 
                             for _ in range(self.width)] for _ in range(self.height)])
     
     def save_table(self):
@@ -74,7 +75,6 @@ class Q_learning:
     def calculate_q_value(self,action,reward,max_q_value):
         return self.weight_facter * self.Q_table[self.x,self.y][action] +\
                 self.lr * (reward + self.decay_rate * max_q_value)
-    
     
     def train_agent(self, n_episodes):
         for _ in range(n_episodes):
