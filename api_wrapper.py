@@ -103,15 +103,19 @@ class APIWrapper:
     #     print(response.text)
 
 
-api = APIWrapper()
-# runs = api.get_runs(1)
-# print(runs)
+def main():
+    api = APIWrapper()
+    # runs = api.get_runs(1)
+    # print(runs)
 
-# world, res = api.get_location()
-# print(world)
+    # world, res = api.get_location()
+    # print(world)
 
-# worldId = api.enter_world(0)
+    # worldId = api.enter_world(0)
 
-# api.make_move(worldId, 0)
-score = api.get_score()
-print(score)
+    # api.make_move(worldId, 0)
+    score = api.get_score()
+    print(score)
+
+if __name__=="__main__":
+    main()
