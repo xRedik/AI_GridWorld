@@ -2,15 +2,15 @@ import numpy as np
 import os
 
 class Q_learning:
-    def __init__(self, lr, decay_rate, epsilon, width = 40, height = 40):
-        self.lr = lr
+    def __init__(self, learning_rate, decay_rate, epsilon, width = 40, height = 40):
+        self.lr = learning_rate
         self.decay_rate = decay_rate
         self.epsilon = epsilon
         self.width = width
         self.height = height
 
         #will be created after postman
-        self.gridWorld_id = None
+        self.gridWorld_id = "None"
         self.x = None
         self.y = None
 
@@ -18,9 +18,6 @@ class Q_learning:
         
         self.actions = ["North","South","West","East"]
         self.Q_table = self.get_table()
-
-    def should_explore(self):
-        return True if np.random.uniform(0, 1) < self.epsilon else False
 
     def get_table(self):
 
@@ -35,6 +32,21 @@ class Q_learning:
     
     def save_table(self):
         np.save(self.filename,self.Q_table)
+
+    def should_explore(self):
+        return True if np.random.uniform(0, 1) < self.epsilon else False
+
+    def get_max_value(self,x,y):
+        return max(self.Q_table[x,y].values())
+    
+    def get_optimal_action(self,x,y):
+        return max(self.Q_table[x][y], key = self.Q_table[x][y].get)
+
+    def take_action(self):
+        return np.random.choice(self.actions) if self.should_explore() else self.get_optimal_action(self.x, self.y) 
+
+    
+    
 
 
 
