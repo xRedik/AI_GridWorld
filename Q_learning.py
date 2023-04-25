@@ -5,7 +5,9 @@ import os
  
 class Q_learning:
     def __init__(self, learning_rate, decay_rate, epsilon, width = 40, height = 40, 
-                 reward_threshold = 800, save_threshold = 15,summary_threshold = 15, n_iterations = 15000, gridWorld_id = 0 ):
+                 reward_threshold = 800, save_threshold = 15,summary_threshold = 15, n_iterations = 15000, gridWorld_id = 0,
+                 bool_proggressbar = False, decrease_epsilon = 0.05):
+        
         self.lr = learning_rate
         self.weight_facter = 1 - learning_rate
         self.decay_rate = decay_rate
@@ -17,6 +19,8 @@ class Q_learning:
         self.summary_threshold = summary_threshold
         self.n_iterations = n_iterations
         self.gridWorld_id = gridWorld_id
+        self.bool_progressbar = bool_proggressbar
+        self.decrease_epsilon = decrease_epsilon
 
         self.api = APIWrapper()
         
@@ -28,21 +32,24 @@ class Q_learning:
         while True:
             self.gridWorld_id, curr_state = self.api.get_location()
 
-            if self.gridWorld_id != -1:
+            if int(self.gridWorld_id) != -1:
                 break
 
             self.api.enter_world(self.gridWorld_id)
+            print("Trying to enter to the grid world......")
         
         print("Successfully entered to the grid world")
+        print(self.gridWorld_id)
+        print(curr_state)
 
-        self.x, self.y = int(curr_state["x"]), int(curr_state["y"])
-
+        #self.x, self.y = int(curr_state[0]), int(curr_state[-1])
+        exit(0)
         self.filename = "gridWorld_" + self.gridWorld_id + ".npy"        
         self.actions = ["North","South","West","East"]
         self.Q_table = self.get_table()
 
     def get_table(self):
-        return np.load(self.filename) if os.path.exists(self.filename) else self.initialize_table()
+        return np.load(self.filename, allow_pickle=True) if os.path.exists(self.filename) else self.initialize_table()
 
     def _get_random_number(self):
         return np.random.uniform(low=-1, high=1)
@@ -75,14 +82,15 @@ class Q_learning:
                 self.lr * (reward + self.decay_rate * max_q_value)
     
     def train_agent(self, n_episodes):
-        for _ in tqdm(range(n_episodes)):
+        for _ in range(n_episodes):
             self.update_q_values()
 
     def update_q_values(self):
-        for iter in range(self.number_of_iteration):
-
-            reward, _, new_state = self.api.make_move()
-            new_x, new_y =  int(new_state["x"]), int(new_state["y"])
+        for iter in tqdm(range(self.n_iterations)) if self.bool_progressbar else range(self.n_iterations):
+            
+            action = self.take_action()
+            reward, _, new_state = self.api.make_move(self.gridWorld_id, action)
+            new_x, new_y =  int(new_state['x']), int(new_state['y'])
             
             if self.is_terminal(reward):
                 print("-----Agent is in terminal state-----")
@@ -90,17 +98,19 @@ class Q_learning:
                 self.summary_model(new_state, reward, new_x, new_y)
                 return
             
-            action = self.take_action()
             max_q_value_for_new_state = self.get_max_value(new_x, new_y)
-            self.q_table[self.x, self.y][action] = self.calculate_q_value(action, reward, max_q_value_for_new_state)
+            self.Q_table[self.x, self.y][action] = self.calculate_q_value(action, reward, max_q_value_for_new_state)
 
-            print("-----Q values successfully updated-----")
+            if not self.bool_progressbar:
+                print("-----Q values successfully updated-----")
             
             if iter % self.save_threshold == 0:
                 self.save_table()
-                print("-----Q values successfully saved-----")
+                
+                if not self.bool_progressbar:
+                    print("-----Q values successfully saved-----")
 
-            if iter % self.summary_threshold == 0:
+            if iter % self.summary_threshold == 0 and not self.bool_progressbar:
                 self.summary_model(new_state, reward, new_x, new_y)
             
             self.x, self.y = new_x, new_y
@@ -109,7 +119,7 @@ class Q_learning:
         print("State: ", state)
         print("Reward: ", reward)
         print("Coordinate X: ", x)
-        print("Coordinate Y: ",y)
+        print("Coordinate Y: ", y)
 
 
 
