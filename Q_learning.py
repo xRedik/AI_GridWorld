@@ -6,7 +6,7 @@ import os
 class Q_learning:
     def __init__(self, learning_rate, decay_rate, epsilon, width = 40, height = 40, 
                  reward_threshold = 800, save_threshold = 15,summary_threshold = 15, n_iterations = 15000, gridWorld_id = 0,
-                 bool_proggressbar = False, decrease_epsilon = 0.05):
+                 bool_proggressbar = False, epsilon_decay_rate = 0.01):
         
         self.lr = learning_rate
         self.weight_facter = 1 - learning_rate
@@ -20,15 +20,10 @@ class Q_learning:
         self.n_iterations = n_iterations
         self.gridWorld_id = gridWorld_id
         self.bool_progressbar = bool_proggressbar
-        self.decrease_epsilon = decrease_epsilon
+        self.epsilon_decay_rate = epsilon_decay_rate
 
         self.api = APIWrapper()
         
-        # self.gridWorld_id, curr_state = self.api.get_location()
-        # if self.gridWorld_id == -1:
-        #     self.api.enter_world(self.gridWorld_id)
-        #     self.gridWorld_id, curr_state = self.api.get_location()
-
         while True:
             self.gridWorld_id, curr_state = self.api.get_location()
 
@@ -42,8 +37,7 @@ class Q_learning:
         print(self.gridWorld_id)
         print(curr_state)
 
-        #self.x, self.y = int(curr_state[0]), int(curr_state[-1])
-        exit(0)
+        self.x, self.y = int(curr_state[0]), int(curr_state[-1])
         self.filename = "gridWorld_" + self.gridWorld_id + ".npy"        
         self.actions = ["North","South","West","East"]
         self.Q_table = self.get_table()
@@ -81,6 +75,7 @@ class Q_learning:
         return self.weight_facter * self.Q_table[self.x,self.y][action] +\
                 self.lr * (reward + self.decay_rate * max_q_value)
     
+    
     def train_agent(self, n_episodes):
         for _ in range(n_episodes):
             self.update_q_values()
@@ -115,11 +110,10 @@ class Q_learning:
             
             self.x, self.y = new_x, new_y
 
+            self.epsilon -= self.epsilon_decay_rate
+
     def summary_model(self, state, reward, x, y):
         print("State: ", state)
         print("Reward: ", reward)
         print("Coordinate X: ", x)
         print("Coordinate Y: ", y)
-
-
-
