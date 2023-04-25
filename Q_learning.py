@@ -9,7 +9,7 @@ class Q_learning:
                  bool_proggressbar = False, epsilon_decay_rate = 0.01, set_randomly = True):
         
         self.lr = learning_rate
-        self.weight_facter = 1 - learning_rate
+        self.weight_factor = 1 - learning_rate
         self.decay_rate = decay_rate
         self.epsilon = epsilon
         self.width = width
@@ -73,7 +73,7 @@ class Q_learning:
         return True if abs(reward) > self.reward_threshold else False
     
     def calculate_q_value(self,action,reward,max_q_value):
-        return self.weight_facter * self.Q_table[self.x,self.y][action] +\
+        return self.weight_factor * self.Q_table[self.x,self.y][action] +\
                 self.lr * (reward + self.decay_rate * max_q_value)
     
     def train_agent(self, n_episodes):
