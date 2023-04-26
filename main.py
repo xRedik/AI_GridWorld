@@ -5,11 +5,11 @@ import argparse
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-lr", "--learning_rate",dest="lr",
+    parser.add_argument("-a", "--alpha",dest="alpha",
                         type=np.float32,help = "Learning rate for updating the Q values")
     
-    parser.add_argument("-dr", "--decay_rate",dest="dr",
-                    type=np.float32,help = "Decay rate for model")
+    parser.add_argument("-g", "--gamme",dest="gamma",
+                    type=np.float32,help = "Discount factor for model")
     
     parser.add_argument("-e", "--epsilon",dest="epsilon",
                     type=np.float32,help = "Probability of the random action")
@@ -17,16 +17,16 @@ def main():
     
     args = parser.parse_args()
     
-    learning_rate = args.lr
-    decay_rate = args.dr
+    alpha = args.alpha
+    gamma = args.gamma
     epsilon = args.epsilon
 
-    if learning_rate == None or decay_rate == None or epsilon == None:
+    if alpha == None or gamma == None or epsilon == None:
         raise Exception("Please enter the values with proper flags\n\
                         For help message call the program with -h flag")
 
-    grid_world_agent = Q_learning(learning_rate,decay_rate,epsilon,bool_proggressbar=True)
-    grid_world_agent.train_agent(n_episodes = 3)
+    grid_world_agent = Q_learning(alpha, gamma, epsilon,bool_proggressbar=True)
+    grid_world_agent.train_agent(n_episodes = 1)
 
 if __name__=="__main__":
     main()
